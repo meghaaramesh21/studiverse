@@ -87,7 +87,38 @@
     <span>Your Learning. Your World. Your Journey.</span>
   </header>
 
-  <main>
+  </main>
+    <section id="focus-guardian">
+      <h2>🛡️ Focus Guardian</h2>
+      <p>Stay focused during your study sessions. Your camera is optional.</p>
+
+      <div class="card">
+        <video id="guardianVideo" autoplay muted playsinline
+          style="width:100%; max-width:400px; display:none; border-radius:12px;">
+        </video>
+
+        <p id="guardianStatus">Camera is off.</p>
+
+        <button id="startGuardian" onclick="startGuardian()">
+          📷 Turn Camera On
+        </button>
+
+        <button onclick="stopGuardian()">
+          ⏹ Turn Camera Off
+        </button>
+
+        <button onclick="stopSiren()">
+          🔕 Stop Alert
+        </button>
+
+        <p style="font-size:13px; color:#aaa;">
+          Camera access requires your permission. This feature is experimental
+          and may mistake normal blinking or looking down for tiredness.
+        </p>
+      </div>
+    </section>
+
+    
     <div class="hero">
       <div class="eyebrow">YOUR PERSONAL LEARNING UNIVERSE</div>
       <h1>Every topic is a new world. 🌌</h1>
