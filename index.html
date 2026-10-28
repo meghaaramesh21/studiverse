@@ -252,5 +252,92 @@
     }
     showTimer();
   </script>
+  
+const guardianVideo = document.getElementById("guardianVideo");
+const guardianStatus = document.getElementById("guardianStatus");
+
+let guardianStream = null;
+let guardianAudio = null;
+let guardianAlarm = null;
+
+async function startGuardian() {
+  try {
+    guardianStatus.textContent = "Requesting camera permission...";
+
+    guardianStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: false
+    });
+
+    guardianVideo.srcObject = guardianStream;
+    guardianVideo.style.display = "block";
+
+    guardianStatus.textContent =
+      "Camera is on. Remember to take breaks while studying.";
+
+    guardianAudio = new (
+      window.AudioContext || window.webkitAudioContext
+    )();
+
+  } catch (error) {
+    guardianStatus.textContent =
+      "Camera unavailable. Please check your browser permissions.";
+  }
+}
+
+function stopGuardian() {
+  if (guardianStream) {
+    guardianStream.getTracks().forEach(track => track.stop());
+    guardianStream = null;
+  }
+
+  guardianVideo.srcObject = null;
+  guardianVideo.style.display = "none";
+
+  stopSiren();
+
+  guardianStatus.textContent = "Camera is off.";
+}
+
+function stopSiren() {
+  if (guardianAlarm) {
+    clearInterval(guardianAlarm);
+    guardianAlarm = null;
+  }
+
+  if (guardianAudio) {
+    guardianAudio.close();
+    guardianAudio = null;
+  }
+}
+
+function playSiren() {
+  if (!guardianAudio) return;
+
+  stopSiren();
+
+  guardianAudio = new (
+    window.AudioContext || window.webkitAudioContext
+  )();
+
+  const oscillator = guardianAudio.createOscillator();
+  const volume = guardianAudio.createGain();
+
+  oscillator.type = "sine";
+  oscillator.frequency.value = 800;
+  volume.gain.value = 0.15;
+
+  oscillator.connect(volume);
+  volume.connect(guardianAudio.destination);
+
+  oscillator.start();
+
+  guardianAlarm = setTimeout(() => {
+    oscillator.stop();
+    guardianAudio.close();
+    guardianAudio = null;
+    guardianAlarm = null;
+  }, 2000);
+}
 </body>
 </html>
