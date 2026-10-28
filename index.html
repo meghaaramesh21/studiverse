@@ -259,71 +259,7 @@
     }
     showTimer();
     
-async function extractStudyFile() {
-  const fileInput = document.getElementById("studyFile");
-  const file = fileInput.files[0];
-
-  if (!file) {
-    alert("Please choose a PDF first!");
-    return;
-  }
-
-  if (!file.name.toLowerCase().endsWith(".pdf")) {
-    alert("For now, please upload a PDF file.");
-    return;
-  }
-
-  const resultBox = document.getElementById("extractionResult");
-  resultBox.textContent = "Extracting your study material...";
-
-  const formData = new FormData();
-  formData.append("file", file);
-
-  try {
-    const response = await fetch(
-      "https://studiverse.onrender.com/extract",
-      {
-        method: "POST",
-        body: formData
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.detail || "PDF extraction failed.");
-    }
-
-    resultBox.replaceChildren();
-
-    const heading = document.createElement("h3");
-    heading.textContent = "📚 " + data.filename;
-    resultBox.appendChild(heading);
-
-    const pageInfo = document.createElement("p");
-    pageInfo.textContent = "Pages: " + data.page_count;
-    resultBox.appendChild(pageInfo);
-
-    const topicsHeading = document.createElement("h3");
-    topicsHeading.textContent = "Topics detected";
-    resultBox.appendChild(topicsHeading);
-
-    const topics = document.createElement("pre");
-    topics.style.whiteSpace = "pre-wrap";
-    topics.textContent = JSON.stringify(data.topics, null, 2);
-    resultBox.appendChild(topics);
-
-    resultBox.dataset.extractedText =
-      JSON.stringify(data);
-  } catch (error) {
-    resultBox.textContent =
-      "Error: " + error.message;
-  }
-}
-
-  </script>
-  
-const guardianVideo = document.getElementById("guardianVideo");
+  const guardianVideo = document.getElementById("guardianVideo");
 const guardianStatus = document.getElementById("guardianStatus");
 
 let guardianStream = null;
@@ -409,6 +345,71 @@ function playSiren() {
     guardianAudio = null;
     guardianAlarm = null;
   }, 2000);
+} 
+async function extractStudyFile() {
+  const fileInput = document.getElementById("studyFile");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Please choose a PDF first!");
+    return;
+  }
+
+  if (!file.name.toLowerCase().endsWith(".pdf")) {
+    alert("For now, please upload a PDF file.");
+    return;
+  }
+
+  const resultBox = document.getElementById("extractionResult");
+  resultBox.textContent = "Extracting your study material...";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(
+      "https://studiverse.onrender.com/extract",
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || "PDF extraction failed.");
+    }
+
+    resultBox.replaceChildren();
+
+    const heading = document.createElement("h3");
+    heading.textContent = "📚 " + data.filename;
+    resultBox.appendChild(heading);
+
+    const pageInfo = document.createElement("p");
+    pageInfo.textContent = "Pages: " + data.page_count;
+    resultBox.appendChild(pageInfo);
+
+    const topicsHeading = document.createElement("h3");
+    topicsHeading.textContent = "Topics detected";
+    resultBox.appendChild(topicsHeading);
+
+    const topics = document.createElement("pre");
+    topics.style.whiteSpace = "pre-wrap";
+    topics.textContent = JSON.stringify(data.topics, null, 2);
+    resultBox.appendChild(topics);
+
+    resultBox.dataset.extractedText =
+      JSON.stringify(data);
+  } catch (error) {
+    resultBox.textContent =
+      "Error: " + error.message;
+  }
 }
+
+  </script>
+  
+
 </body>
 </html>
