@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studiverse | Your Learning Universe</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0c1020;
+      color: #f5f4ff;
+    }
+    header {
+      padding: 22px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #292d47;
+    }
+    .logo { font-size: 25px; font-weight: bold; color: #c7b8ff; }
+    header span { color: #a7a8c7; font-size: 13px; }
+    main { max-width: 1100px; margin: auto; padding: 35px 22px; }
+    .hero {
+      padding: 38px;
+      border-radius: 22px;
+      background: linear-gradient(120deg, #25234c, #362657, #172c48);
+    }
+    .eyebrow { color: #c7b8ff; font-size: 13px; letter-spacing: 2px; }
+    h1 { font-size: clamp(32px, 5vw, 52px); margin: 15px 0; }
+    p { color: #c0c2d9; line-height: 1.7; }
+    button, .upload-label {
+      background: #c2b1ff;
+      color: #17132b;
+      border: 0;
+      padding: 12px 17px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-block;
+    }
+    button:hover, .upload-label:hover { background: #ded5ff; }
+    .stats, .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 17px;
+      margin-top: 25px;
+    }
+    .card {
+      background: #171b30;
+      border: 1px solid #2b304b;
+      border-radius: 17px;
+      padding: 22px;
+    }
+    .card h3 { margin-top: 8px; }
+    .number { font-size: 28px; font-weight: bold; color: #c7b8ff; }
+    section { margin-top: 35px; }
+    h2 { font-size: 23px; }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 9px;
+      border: 1px solid #393d59;
+      background: #101428;
+      color: white;
+      margin: 8px 0 14px;
+      font: inherit;
+    }
+    textarea { min-height: 130px; resize: vertical; }
+    #timer { font-size: 36px; font-weight: bold; margin: 15px 0; }
+    #fileName, #saveStatus { overflow-wrap: anywhere; color: #c7b8ff; }
+    .mission { display: flex; gap: 12px; align-items: flex-start; }
+    .mission input { width: auto; margin-top: 5px; }
+    footer { text-align: center; color: #888eac; padding: 35px 15px; }
+    @media (max-width: 500px) {
+      header { padding: 18px; }
+      main { padding: 22px 15px; }
+      .hero { padding: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">✦ Studiverse</div>
+    <span>Your Learning. Your World. Your Journey.</span>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="eyebrow">YOUR PERSONAL LEARNING UNIVERSE</div>
+      <h1>Every topic is a new world. 🌌</h1>
+      <p>Turn your study goals into missions. Learn at your own pace, save your notes, and celebrate every step forward.</p>
+      <button onclick="document.getElementById('missions').scrollIntoView({behavior:'smooth'})">Explore my missions ↗</button>
+    </div>
+
+    <div class="stats">
+      <div class="card">
+        <p>Study missions completed</p>
+        <div class="number" id="completed">0</div>
+      </div>
+      <div class="card">
+        <p>Study timer</p>
+        <div id="timer">25:00</div>
+        <button onclick="startTimer()">Start</button>
+        <button onclick="pauseTimer()">Pause</button>
+        <button onclick="resetTimer()">Reset</button>
+      </div>
+      <div class="card">
+        <p>Your learning motto</p>
+        <h3>Small steps. Big discoveries. ✨</h3>
+      </div>
+    </div>
+
+    <section id="missions">
+      <h2>🚀 Your study missions</h2>
+      <p>Complete a mission when you've finished studying it.</p>
+      <div class="grid">
+        <div class="card mission">
+          <input type="checkbox" onchange="updateProgress(this)">
+          <div><h3>🌱 Mission 01</h3><p>Explore a new topic</p></div>
+        </div>
+        <div class="card mission">
+          <input type="checkbox" onchange="updateProgress(this)">
+          <div><h3>📚 Mission 02</h3><p>Read your study notes</p></div>
+        </div>
+        <div class="card mission">
+          <input type="checkbox" onchange="updateProgress(this)">
+          <div><h3>🧠 Mission 03</h3><p>Revise what you learned</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>📂 My study materials</h2>
+      <div class="card">
+        <p>Choose a study file from your device.</p>
+        <input type="file" id="studyFile" accept=".pdf,.txt,.doc,.docx">
+        <p id="fileName">No file selected yet.</p>
+        <p>Note: selecting a file here does not upload it to a server or extract its topics yet.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>📝 My digital notebook</h2>
+      <div class="card">
+        <label for="noteTitle">Note title</label>
+        <input id="noteTitle" placeholder="e.g. Unit 3 — Trees">
+        <label for="noteText">Your notes</label>
+        <textarea id="noteText" placeholder="Write what you learned today..."></textarea>
+        <button onclick="saveNote()">Save notes on this device</button>
+        <p id="saveStatus"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>Made with ✦ for curious minds · Studiverse</footer>
+
+  <script>
+    let completed = 0;
+    function updateProgress(box) {
+      completed += box.checked ? 1 : -1;
+      document.getElementById('completed').textContent = completed;
+    }
+
+    document.getElementById('studyFile').addEventListener('change', function() {
+      document.getElementById('fileName').textContent =
+        this.files.length ? 'Selected: ' + this.files[0].name : 'No file selected yet.';
+    });
+
+    function saveNote() {
+      const title = document.getElementById('noteTitle').value.trim();
+      const note = document.getElementById('noteText').value;
+      try {
+        localStorage.setItem('studiverse-note-title', title);
+        localStorage.setItem('studiverse-note-text', note);
+        document.getElementById('saveStatus').textContent =
+          'Notes saved in this browser on this device!';
+      } catch (error) {
+        document.getElementById('saveStatus').textContent =
+          'Could not save notes in this browser.';
+      }
+    }
+
+    document.getElementById('noteTitle').value =
+      localStorage.getItem('studiverse-note-title') || '';
+    document.getElementById('noteText').value =
+      localStorage.getItem('studiverse-note-text') || '';
+
+    let seconds = 25 * 60;
+    let timerInterval = null;
+
+    function showTimer() {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      document.getElementById('timer').textContent =
+        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    }
+    function startTimer() {
+      if (timerInterval !== null) return;
+      timerInterval = setInterval(function() {
+        if (seconds > 0) {
+          seconds--;
+          showTimer();
+        } else {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          alert('Mission accomplished! Time for a short break. ✨');
+        }
+      }, 1000);
+    }
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    function resetTimer() {
+      pauseTimer();
+      seconds = 25 * 60;
+      showTimer();
+    }
+    showTimer();
+  </script>
+</body>
+</html>
